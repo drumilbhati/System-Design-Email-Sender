@@ -56,24 +56,38 @@ func NewContentGenerator(apiKey string) (*ContentGenerator, error) {
 
 func (c *ContentGenerator) GenerateArticle(ctx context.Context) (string, error) {
 	prompt := `
-	Write a crisp, concise, and highly technical system design article about a random, interesting topic in software engineering (e.g., distributed rate limiting, consistent hashing, LSM trees, raft consensus, bloom filters).
+	You are a Senior Staff Software Engineer writing a daily technical newsletter for other experienced engineers.
 	
-	OUTPUT FORMAT:
-	- **Markdown** (CommonMark/GFM).
-	- Do NOT wrap the entire output in a single code block.
+	Your task is to generate a deep, high-quality technical article on a **randomly selected topic** from one of the following three categories. Pick ONE category and one specific topic within it. Do not announce the category, just dive into the topic.
+
+	### CATEGORY 1: Real-World System Breakdowns (Case Studies)
+	Analyze how a major tech company solved a specific scaling problem. Base this on common public engineering challenges (e.g., from blogs like Uber, Netflix, Meta, Discord, Stripe).
+	- Examples: "How Discord stores billions of messages (Cassandra to ScyllaDB)", "Uber's Ringpop for distributed state", "Netflix's chaos engineering principles", "Instagram's ID generation with Postgres".
+	- Focus on: The specific problem, the architectural evolution, and the trade-offs.
+
+	### CATEGORY 2: High-Level Design (HLD)
+	Design a complex distributed system component.
+	- Examples: "Designing a Distributed Job Scheduler", "Architecture of a Real-time Collaborative Editor (OT vs CRDT)", "Building a Geo-Spatial Index for Proximity Search", "Design of a Write-Heavy Analytics System".
+	- Focus on: Data flow, database choice (SQL vs NoSQL), caching strategies, consistency models (CAP theorem application), and failure scenarios.
+
+	### CATEGORY 3: Low-Level Design (LLD) & Internals
+	Deep dive into code, algorithms, or language internals (specifically Go context).
+	- Examples: "Implementing a Lock-Free Ring Buffer", "How Go's Garbage Collector actually works", "Writing a Custom Memory Allocator", "Database Internals: LSM Trees vs B-Trees implementation details".
+	- Focus on: Concurrency patterns, memory management, performance optimization, and idiomatic Go code.
+
+	### GUIDELINES:
+	1. **Tone**: Professional, "Engineer-to-Engineer". No fluff, no "In this fast-paced world" intros. Jump straight into the technical meat.
+	2. **Structure**:
+		- **Title**: Catchy and technical.
+		- **The Problem**: What are we solving? Why is it hard?
+		- **The Solution (Architecture/Code)**:
+			- For HLD: Explain components, diagrams (described in text), and data flow.
+			- For LLD: Provide **idiomatic Go code snippets** demonstrating the core logic.
+		- **War Stories / Trade-offs**: What breaks? What are the limitations?
+		- **Key Takeaways**: Bullet points.
+	3. **Formatting**: Markdown. Use triple backticks for code.
 	
-	GUIDELINES:
-	1. **Structure**: Use # for Title, ## for sections.
-	2. **Code**: Use triple backticks (e.g. ` + "`" + `go ... ` + "`" + `) for code blocks. Ensure code is practical and idiomatic Go.
-	3. **Tone**: Educational, professional, no fluff.
-	
-	REQUIRED SECTIONS:
-	1. Title
-	2. Introduction (The "Why")
-	3. Core Concepts (The "What")
-	4. Go Implementation Patterns (The "How" - Heavy on code)
-	5. Trade-offs and Challenges
-	6. Conclusion
+	SURPRISE ME. Do not always pick the most popular topic. Explore niche but critical engineering concepts.
 	`
 
 	resp, err := c.model.GenerateContent(ctx, genai.Text(prompt))
