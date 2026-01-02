@@ -47,8 +47,12 @@ func (m *SMTPMailer) Send(to []string, subject, bodyHTML string) error {
 
 		var err error
 		if m.Port == 465 {
+			// Implicit TLS
+			fmt.Println("Using Implicit TLS (Port 465) for email sending...")
 			err = m.sendMailTLS(addr, auth, recipient, msg)
 		} else {
+			// Standard SMTP (likely STARTTLS or plain)
+			fmt.Printf("Using Standard SMTP (Port %d) for email sending...\n", m.Port)
 			err = smtp.SendMail(addr, auth, m.Sender, []string{recipient}, msg)
 		}
 

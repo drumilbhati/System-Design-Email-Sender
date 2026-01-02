@@ -157,6 +157,7 @@ func main() {
 			return
 		}
 		go dailyJob()
+		log.Println("Manual trigger received. Starting daily job...")
 		w.Write([]byte("Job triggered manually"))
 	})
 
