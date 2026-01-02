@@ -117,8 +117,16 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cancel()
 
+		// Determine if we need to force a specific category
+		var overrideInstruction string
+		// Every Sunday (or every 7th day roughly), we force a Real-World System Breakdown
+		if time.Now().Weekday() == time.Sunday {
+			overrideInstruction = "STRICTLY generate an article from CATEGORY 1: Real-World System Breakdowns (Case Studies). Do NOT choose other categories."
+			log.Println("It's Sunday! Forcing 'Real-World System Breakdown' topic.")
+		}
+
 		log.Println("Generating content with Gemini...")
-		articleHTML, err := aiClient.GenerateArticle(ctx)
+		articleHTML, err := aiClient.GenerateArticle(ctx, overrideInstruction)
 		if err != nil {
 			log.Printf("Error generating article: %v", err)
 			return

@@ -54,7 +54,7 @@ func NewContentGenerator(apiKey string) (*ContentGenerator, error) {
 	}, nil
 }
 
-func (c *ContentGenerator) GenerateArticle(ctx context.Context) (string, error) {
+func (c *ContentGenerator) GenerateArticle(ctx context.Context, overrideInstruction string) (string, error) {
 	prompt := `
 	You are a Senior Mentor and Technical Lead writing a daily educational newsletter for **college students and junior engineers**.
 	
@@ -90,6 +90,10 @@ func (c *ContentGenerator) GenerateArticle(ctx context.Context) (string, error) 
 	
 	SURPRISE ME. Pick a topic that is fundamental yet fascinating for a student.
 	`
+
+	if overrideInstruction != "" {
+		prompt += fmt.Sprintf("\n\n**IMPORTANT OVERRIDE**: %s", overrideInstruction)
+	}
 
 	resp, err := c.model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
