@@ -16,7 +16,6 @@ import (
 	"github.com/drumil/system-design-mailer/internal/ai"
 	"github.com/drumil/system-design-mailer/internal/config"
 	"github.com/drumil/system-design-mailer/internal/mailer"
-	"github.com/drumil/system-design-mailer/internal/scheduler"
 	"github.com/drumil/system-design-mailer/internal/store"
 )
 
@@ -135,13 +134,6 @@ func main() {
 		}
 	}
 
-	// 6. Start Scheduler (24 hours)
-	// For demo purposes, let's trigger it 10 seconds after start, then every 24 hours?
-	// Or strictly 24 hours. The prompt says "everyday".
-	// Let's stick to strict 24h interval.
-	jobScheduler := scheduler.NewScheduler(24*time.Hour, dailyJob)
-	jobScheduler.Start()
-
 	// 7. HTTP Server for Subscriptions
 	// Serve static files (Frontend)
 	fs := http.FileServer(http.Dir("./public"))
@@ -212,8 +204,6 @@ func main() {
 	<-stop
 	log.Println("Shutting down...")
 
-	jobScheduler.Stop()
-	
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
