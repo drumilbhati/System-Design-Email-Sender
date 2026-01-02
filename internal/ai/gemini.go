@@ -56,38 +56,39 @@ func NewContentGenerator(apiKey string) (*ContentGenerator, error) {
 
 func (c *ContentGenerator) GenerateArticle(ctx context.Context) (string, error) {
 	prompt := `
-	You are a Senior Staff Software Engineer writing a daily technical newsletter for other experienced engineers.
+	You are a Senior Mentor and Technical Lead writing a daily educational newsletter for **college students and junior engineers**.
 	
-	Your task is to generate a deep, high-quality technical article on a **randomly selected topic** from one of the following three categories. Pick ONE category and one specific topic within it. Do not announce the category, just dive into the topic.
+	Your goal is to explain complex software engineering concepts in a way that is **accessible, encouraging, and easy to understand**, while still being technically accurate. Avoid overly dense jargon; if you use a complex term, explain it simply first.
+	
+	Your task is to generate an article on a **randomly selected topic** from one of the following categories. Pick ONE category and one specific topic.
 
 	### CATEGORY 1: Real-World System Breakdowns (Case Studies)
-	Analyze how a major tech company solved a specific scaling problem. Base this on common public engineering challenges (e.g., from blogs like Uber, Netflix, Meta, Discord, Stripe).
-	- Examples: "How Discord stores billions of messages (Cassandra to ScyllaDB)", "Uber's Ringpop for distributed state", "Netflix's chaos engineering principles", "Instagram's ID generation with Postgres".
-	- Focus on: The specific problem, the architectural evolution, and the trade-offs.
+	Explain how big tech companies solve problems, but focus on the "Aha!" moments.
+	- Examples: "How Discord handles so many messages", "Why Netflix doesn't crash", "How Instagram generates IDs".
+	- Focus on: The simple logic behind the massive scale. Use analogies.
 
 	### CATEGORY 2: High-Level Design (HLD)
-	Design a complex distributed system component.
-	- Examples: "Designing a Distributed Job Scheduler", "Architecture of a Real-time Collaborative Editor (OT vs CRDT)", "Building a Geo-Spatial Index for Proximity Search", "Design of a Write-Heavy Analytics System".
-	- Focus on: Data flow, database choice (SQL vs NoSQL), caching strategies, consistency models (CAP theorem application), and failure scenarios.
+	Design a system component, but keep it grounded.
+	- Examples: "Designing a simple Job Scheduler", "How Google Docs lets two people type at once", "Building a 'Nearby Friends' feature".
+	- Focus on: The basic building blocks (Database, Cache, Load Balancer) and how they talk to each other.
 
 	### CATEGORY 3: Low-Level Design (LLD) & Internals
-	Deep dive into code, algorithms, or language internals (specifically Go context).
-	- Examples: "Implementing a Lock-Free Ring Buffer", "How Go's Garbage Collector actually works", "Writing a Custom Memory Allocator", "Database Internals: LSM Trees vs B-Trees implementation details".
-	- Focus on: Concurrency patterns, memory management, performance optimization, and idiomatic Go code.
+	Dive into code, but make it readable.
+	- Examples: "How a Thread Pool actually works", "Writing your own HashMap", "Understanding Go Context with examples".
+	- Focus on: Clear code examples (Go or Java) and explaining *why* we write it this way.
 
 	### GUIDELINES:
-	1. **Tone**: Professional, "Engineer-to-Engineer". No fluff, no "In this fast-paced world" intros. Jump straight into the technical meat.
+	1. **Tone**: **Friendly, Mentorship-style**. Imagine explaining this to a smart intern. Use simple analogies (e.g., "Think of a Load Balancer like a receptionist...").
 	2. **Structure**:
-		- **Title**: Catchy and technical.
-		- **The Problem**: What are we solving? Why is it hard?
-		- **The Solution (Architecture/Code)**:
-			- For HLD: Explain components, diagrams (described in text), and data flow.
-			- For LLD: Provide **idiomatic code snippets** (Java or Go) demonstrating the core logic.
-		- **War Stories / Trade-offs**: What breaks? What are the limitations?
-		- **Key Takeaways**: Bullet points.
+		- **Title**: Catchy and clear.
+		- **The Problem**: Why do we need this? (e.g., "What happens if 1 million people try to login at once?")
+		- **The Solution**: Explain the design step-by-step.
+			- For HLD: Explain the flow clearly.
+			- For LLD: Provide **commented, easy-to-read code snippets** (Go or Java).
+		- **Why It Matters**: Practical takeaways for their future interviews or projects.
 	3. **Formatting**: Markdown. Use triple backticks for code.
 	
-	SURPRISE ME. Do not always pick the most popular topic. Explore niche but critical engineering concepts.
+	SURPRISE ME. Pick a topic that is fundamental yet fascinating for a student.
 	`
 
 	resp, err := c.model.GenerateContent(ctx, genai.Text(prompt))
