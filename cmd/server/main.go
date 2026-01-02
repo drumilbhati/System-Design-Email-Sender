@@ -152,7 +152,7 @@ func main() {
 		// Basic security check (in real app, use auth)
 		inputKey := r.URL.Query().Get("key")
 		if inputKey != cfg.SMTPPass { // reusing a secret for simplicity
-			log.Printf("Auth failed. Expected: '%s', Got: '%s'", cfg.SMTPPass, inputKey)
+			log.Println("Auth failed: Invalid key provided")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
