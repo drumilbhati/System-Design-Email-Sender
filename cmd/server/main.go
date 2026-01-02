@@ -30,7 +30,17 @@ func main() {
 	cfg := config.Load()
 
 	// 2. Initialize Store
-	subStore, err := store.NewSubscriberStore("subscribers.json")
+	dataDir := os.Getenv("DATA_DIR")
+	if dataDir == "" {
+		dataDir = "."
+	}
+	// Ensure directory exists
+	if err := os.MkdirAll(dataDir, 0755); err != nil {
+		log.Printf("Warning: could not create data directory: %v", err)
+	}
+	
+	storePath := fmt.Sprintf("%s/subscribers.json", dataDir)
+	subStore, err := store.NewSubscriberStore(storePath)
 	if err != nil {
 		log.Fatalf("Failed to initialize store: %v", err)
 	}
@@ -90,6 +100,10 @@ func main() {
 	jobScheduler.Start()
 
 	// 7. HTTP Server for Subscriptions
+	// Serve static files (Frontend)
+	fs := http.FileServer(http.Dir("./public"))
+	http.Handle("/", fs)
+
 	http.HandleFunc("/subscribe", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

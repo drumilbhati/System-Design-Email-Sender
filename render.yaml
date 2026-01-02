@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: system-design-mailer
+    env: go
+    buildCommand: go build -o server cmd/server/main.go
+    startCommand: ./server
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: GEMINI_API_KEY
+        sync: false # User must provide this
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SENDER_EMAIL
+        sync: false
+      - key: DATA_DIR
+        value: /var/lib/data
+    disk:
+      name: data
+      mountPath: /var/lib/data
+      sizeGB: 1
