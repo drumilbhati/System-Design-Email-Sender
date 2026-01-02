@@ -82,7 +82,7 @@ func (c *ContentGenerator) GenerateArticle(ctx context.Context) (string, error) 
 		- **The Problem**: What are we solving? Why is it hard?
 		- **The Solution (Architecture/Code)**:
 			- For HLD: Explain components, diagrams (described in text), and data flow.
-			- For LLD: Provide **idiomatic Go code snippets** demonstrating the core logic.
+			- For LLD: Provide **idiomatic code snippets** (Java or Go) demonstrating the core logic.
 		- **War Stories / Trade-offs**: What breaks? What are the limitations?
 		- **Key Takeaways**: Bullet points.
 	3. **Formatting**: Markdown. Use triple backticks for code.
