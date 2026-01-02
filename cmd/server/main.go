@@ -63,11 +63,16 @@ func main() {
 	// 4. Initialize Mailer (Gmail API)
 	// We read credentials from ENV or file
 	credsJSON := os.Getenv("GMAIL_CREDENTIALS_JSON")
+	log.Printf("Debug: GMAIL_CREDENTIALS_JSON length from Env: %d", len(credsJSON))
+
 	if credsJSON == "" {
 		// Fallback to local file for dev
 		b, err := os.ReadFile("credentials.json")
 		if err == nil {
 			credsJSON = string(b)
+			log.Printf("Debug: Loaded credentials.json from file, length: %d", len(credsJSON))
+		} else {
+			log.Println("Debug: credentials.json file not found")
 		}
 	}
 
