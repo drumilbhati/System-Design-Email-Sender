@@ -14,17 +14,19 @@ type Config struct {
 	SMTPPass     string
 	SenderEmail  string
 	Port         string
+	CronSecret   string
 }
 
 func Load() *Config {
 	return &Config{
 		GeminiAPIKey: getEnvOrFatal("GEMINI_API_KEY"),
-		SMTPHost:     getEnvOrFatal("SMTP_HOST"),
+		SMTPHost:     getEnvOrDefault("SMTP_HOST", ""),
 		SMTPPort:     getEnvAsInt("SMTP_PORT", 587),
-		SMTPUser:     getEnvOrFatal("SMTP_USER"),
-		SMTPPass:     getEnvOrFatal("SMTP_PASS"),
+		SMTPUser:     getEnvOrDefault("SMTP_USER", ""),
+		SMTPPass:     getEnvOrDefault("SMTP_PASS", ""),
 		SenderEmail:  getEnvOrFatal("SENDER_EMAIL"),
 		Port:         getEnvOrDefault("PORT", "8080"),
+		CronSecret:   getEnvOrDefault("CRON_SECRET", os.Getenv("SMTP_PASS")), // Fallback to SMTP_PASS
 	}
 }
 

@@ -176,7 +176,12 @@ func main() {
 	http.HandleFunc("/trigger-now", func(w http.ResponseWriter, r *http.Request) {
 		// Basic security check (in real app, use auth)
 		inputKey := r.URL.Query().Get("key")
-		if inputKey != cfg.SMTPPass { // reusing a secret for simplicity
+		if cfg.CronSecret == "" {
+			log.Println("Error: CRON_SECRET is not set. Manual trigger disabled.")
+			http.Error(w, "Configuration error", http.StatusInternalServerError)
+			return
+		}
+		if inputKey != cfg.CronSecret {
 			log.Println("Auth failed: Invalid key provided")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
