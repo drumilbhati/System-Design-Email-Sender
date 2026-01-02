@@ -1,9 +1,8 @@
 package mailer
 
 import (
-	"crypto/tls"
 	"fmt"
-	"github.com/go-mail/mail/v2"
+	"net/smtp"
 )
 
 type SMTPMailer struct {
@@ -29,25 +28,25 @@ func (m *SMTPMailer) Send(to []string, subject, bodyHTML string) error {
 		return nil
 	}
 
-	d := mail.NewDialer(m.Host, m.Port, m.Username, m.Password)
-	
-	// If Port 465, enforce SSL. If 587, StartTLS is automatic.
-	// Render often requires this skip verify if certificates on shared IPs are weird, 
-	// but usually Gmail is fine. We'll set it to be safe.
-	d.TLSConfig = &tls.Config{InsecureSkipVerify: false} 
+	auth := smtp.PlainAuth("", m.Username, m.Password, m.Host)
+	addr := fmt.Sprintf("%s:%d", m.Host, m.Port)
 
-	// Send individually to hide recipients from each other
+	// Headers
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+
 	for _, recipient := range to {
-		msg := mail.NewMessage()
 		// Use a display name + the sender email address
-		msg.SetHeader("From", fmt.Sprintf("System Design Daily <%s>", m.Sender))
-		msg.SetHeader("To", recipient)
-		msg.SetHeader("Subject", subject)
-		msg.SetBody("text/html", bodyHTML)
+		fromHeader := fmt.Sprintf("System Design Daily <%s>", m.Sender)
 
-		if err := d.DialAndSend(msg); err != nil {
+		msg := []byte(fmt.Sprintf("To: %s\r\n"+
+			"From: %s\r\n"+
+			"Subject: %s\r\n"+
+			"%s"+
+			"%s", recipient, fromHeader, subject, mime, bodyHTML))
+
+		err := smtp.SendMail(addr, auth, m.Sender, []string{recipient}, msg)
+		if err != nil {
 			fmt.Printf("Failed to send email to %s: %v\n", recipient, err)
-			// Continue sending to others
 		}
 	}
 
