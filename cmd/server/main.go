@@ -117,12 +117,25 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cancel()
 
-		// Determine if we need to force a specific category
+		// Determine if we need to force a specific category based on the day of the week
 		var overrideInstruction string
-		// Every Sunday (or every 7th day roughly), we force a Core Distributed System Concept
-		if time.Now().Weekday() == time.Sunday {
-			overrideInstruction = "STRICTLY generate an article from CATEGORY 1: Core Distributed Systems Concepts. Pick a fundamental theory like Consistent Hashing, CAP Theorem, or Raft, and explain it simply."
-			log.Println("It's Sunday! Forcing 'Core Distributed Systems Concept' topic.")
+		weekday := time.Now().Weekday()
+
+		switch weekday {
+		case time.Monday, time.Tuesday, time.Wednesday, time.Thursday:
+			// 4 Days of LLD & SOLID
+			overrideInstruction = "STRICTLY generate an article from CATEGORY 3: Low-Level Design (LLD), Patterns & SOLID. Focus on Design Patterns (Factory, Strategy, Observer) or SOLID principles."
+			log.Printf("It's %s! Forcing 'LLD & SOLID' topic.", weekday)
+
+		case time.Friday, time.Saturday:
+			// 2 Days of HLD
+			overrideInstruction = "STRICTLY generate an article from CATEGORY 2: High-Level System Design (HLD). Pick a standard system design interview question (e.g., Rate Limiter, Chat App)."
+			log.Printf("It's %s! Forcing 'HLD' topic.", weekday)
+
+		case time.Sunday:
+			// 1 Day of Real-World Systems
+			overrideInstruction = "STRICTLY generate a 'Real-World System Breakdown' (Case Study). Explain how a specific company (like Uber, Netflix, Discord) solved a specific scaling problem."
+			log.Printf("It's %s! Forcing 'Real-World Case Study' topic.", weekday)
 		}
 
 		log.Println("Generating content with Gemini...")

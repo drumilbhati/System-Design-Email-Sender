@@ -72,10 +72,10 @@ func (c *ContentGenerator) GenerateArticle(ctx context.Context, overrideInstruct
 	- Examples: "Design a URL Shortener", "Design Instagram's Feed", "Design a Chat Application", "Design a Rate Limiter".
 	- Focus on: The high-level components (DB, Cache, Server) and how data flows between them.
 
-	### CATEGORY 3: Low-Level Design (LLD) & Code
-	Zoom in on a specific data structure or coding pattern used in systems.
-	- Examples: "How a Hash Map works internally", "Implementing an LRU Cache", "Thread Pools explained", "Concurrency patterns in Go/Java".
-	- Focus on: Clean code examples and algorithmic logic.
+	### CATEGORY 3: Low-Level Design (LLD), Patterns & SOLID
+	Zoom in on coding patterns, object-oriented design, and SOLID principles.
+	- Examples: "Understanding the Single Responsibility Principle", "Factory Pattern vs Abstract Factory", "Implementing an LRU Cache", "Thread Pools explained", "Observer Pattern in Real Life".
+	- Focus on: Clean code examples, class diagrams (text-based), and **why** a pattern is used.
 
 	### GUIDELINES:
 	1. **Tone**: **"The Smart Senior Student"**. Explain it like you are teaching a friend in the college library.
