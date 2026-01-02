@@ -119,10 +119,10 @@ func main() {
 
 		// Determine if we need to force a specific category
 		var overrideInstruction string
-		// Every Sunday (or every 7th day roughly), we force a Real-World System Breakdown
+		// Every Sunday (or every 7th day roughly), we force a Core Distributed System Concept
 		if time.Now().Weekday() == time.Sunday {
-			overrideInstruction = "STRICTLY generate an article from CATEGORY 1: Real-World System Breakdowns (Case Studies). Do NOT choose other categories."
-			log.Println("It's Sunday! Forcing 'Real-World System Breakdown' topic.")
+			overrideInstruction = "STRICTLY generate an article from CATEGORY 1: Core Distributed Systems Concepts. Pick a fundamental theory like Consistent Hashing, CAP Theorem, or Raft, and explain it simply."
+			log.Println("It's Sunday! Forcing 'Core Distributed Systems Concept' topic.")
 		}
 
 		log.Println("Generating content with Gemini...")

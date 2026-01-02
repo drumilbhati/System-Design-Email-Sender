@@ -62,33 +62,33 @@ func (c *ContentGenerator) GenerateArticle(ctx context.Context, overrideInstruct
 	
 	Your task is to generate an article on a **randomly selected topic** from one of the following categories. Pick ONE category and one specific topic.
 
-	### CATEGORY 1: Real-World System Breakdowns (Case Studies)
-	Explain how big tech companies solve problems, but focus on the "Aha!" moments.
-	- Examples: "How Discord handles so many messages", "Why Netflix doesn't crash", "How Instagram generates IDs".
-	- Focus on: The simple logic behind the massive scale. Use analogies.
+	### CATEGORY 1: Core Distributed Systems Concepts
+	Explain a fundamental concept that powers modern systems.
+	- Examples: "Consistent Hashing", "CAP Theorem", "Load Balancing Algorithms", "Database Sharding vs Partitioning", "Raft Consensus (Simplified)", "Bloom Filters".
+	- Focus on: **Why do we need this?** (The problem it solves) and how it works conceptually.
 
-	### CATEGORY 2: High-Level Design (HLD)
-	Design a system component, but keep it grounded.
-	- Examples: "Designing a simple Job Scheduler", "How Google Docs lets two people type at once", "Building a 'Nearby Friends' feature".
-	- Focus on: The basic building blocks (Database, Cache, Load Balancer) and how they talk to each other.
+	### CATEGORY 2: High-Level System Design (HLD)
+	Architect a familiar application.
+	- Examples: "Design a URL Shortener", "Design Instagram's Feed", "Design a Chat Application", "Design a Rate Limiter".
+	- Focus on: The high-level components (DB, Cache, Server) and how data flows between them.
 
-	### CATEGORY 3: Low-Level Design (LLD) & Internals
-	Dive into code, but make it readable.
-	- Examples: "How a Thread Pool actually works", "Writing your own HashMap", "Understanding Go Context with examples".
-	- Focus on: Clear code examples (Go or Java) and explaining *why* we write it this way.
+	### CATEGORY 3: Low-Level Design (LLD) & Code
+	Zoom in on a specific data structure or coding pattern used in systems.
+	- Examples: "How a Hash Map works internally", "Implementing an LRU Cache", "Thread Pools explained", "Concurrency patterns in Go/Java".
+	- Focus on: Clean code examples and algorithmic logic.
 
 	### GUIDELINES:
-	1. **Tone**: **Friendly, Mentorship-style**. Imagine explaining this to a smart intern. Use simple analogies (e.g., "Think of a Load Balancer like a receptionist...").
+	1. **Tone**: **"The Smart Senior Student"**. Explain it like you are teaching a friend in the college library.
+		- **Simplify Complexity**: If explaining Raft or Consistent Hashing, DO NOT dump math. Use analogies (e.g., "Imagine a ring of servers..." or "Think of consensus like a group voting on where to eat lunch").
 	2. **Structure**:
-		- **Title**: Catchy and clear.
-		- **The Problem**: Why do we need this? (e.g., "What happens if 1 million people try to login at once?")
-		- **The Solution**: Explain the design step-by-step.
-			- For HLD: Explain the flow clearly.
-			- For LLD: Provide **commented, easy-to-read code snippets** (Go or Java).
-		- **Why It Matters**: Practical takeaways for their future interviews or projects.
+		- **Title**: Clear and descriptive.
+		- **The "Why"**: Start with a simple problem statement. (e.g., "Why does a standard hash function fail when we add a server?")
+		- **The "How" (Concept)**: Explain the solution using simple terms and diagrams (described in text).
+		- **Code / Architecture**: Show the structure. For LLD, provide **commented code** (Java or Go).
+		- **Real World**: Where is this actually used? (e.g., "DynamoDB uses this").
 	3. **Formatting**: Markdown. Use triple backticks for code.
 	
-	SURPRISE ME. Pick a topic that is fundamental yet fascinating for a student.
+	SURPRISE ME. Pick a topic that makes the student go "Oh, so THAT is how it works!".
 	`
 
 	if overrideInstruction != "" {
