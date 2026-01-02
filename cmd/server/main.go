@@ -81,7 +81,7 @@ func main() {
 
 	if credsJSON != "" {
 		log.Println("Initializing Gmail API Mailer...")
-		gm, err := mailer.NewGmailMailer(context.Background(), cfg.SenderEmail, []byte(credsJSON))
+		gm, err := mailer.NewGmailMailer(context.Background(), cfg.SenderEmail, cfg.PublicURL, []byte(credsJSON))
 		if err != nil {
 			log.Fatalf("Failed to create Gmail client: %v", err)
 		}
@@ -95,6 +95,7 @@ func main() {
 			cfg.SMTPUser,
 			cfg.SMTPPass,
 			cfg.SenderEmail,
+			cfg.PublicURL,
 		)
 	}
 
@@ -167,6 +168,29 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "Subscribed %s successfully", req.Email)
 		log.Printf("New subscriber: %s", req.Email)
+	})
+
+	http.HandleFunc("/unsubscribe", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet { // Using GET for simple link clicking
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		email := r.URL.Query().Get("email")
+		if email == "" || !isValidEmail(email) {
+			http.Error(w, "Invalid email address", http.StatusBadRequest)
+			return
+		}
+
+		if err := subStore.Remove(email); err != nil {
+			log.Printf("Failed to remove subscriber: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprintf(w, "<h1>Unsubscribed</h1><p>You (%s) have been successfully unsubscribed.</p>", email)
+		log.Printf("Subscriber removed: %s", email)
 	})
 	
 	// Manual trigger endpoint for testing

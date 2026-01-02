@@ -7,20 +7,22 @@ import (
 )
 
 type SMTPMailer struct {
-	Host     string
-	Port     int
-	Username string
-	Password string
-	Sender   string
+	Host      string
+	Port      int
+	Username  string
+	Password  string
+	Sender    string
+	PublicURL string
 }
 
-func NewSMTPMailer(host string, port int, user, pass, sender string) *SMTPMailer {
+func NewSMTPMailer(host string, port int, user, pass, sender, publicURL string) *SMTPMailer {
 	return &SMTPMailer{
-		Host:     host,
-		Port:     port,
-		Username: user,
-		Password: pass,
-		Sender:   sender,
+		Host:      host,
+		Port:      port,
+		Username:  user,
+		Password:  pass,
+		Sender:    sender,
+		PublicURL: publicURL,
 	}
 }
 
@@ -39,11 +41,19 @@ func (m *SMTPMailer) Send(to []string, subject, bodyHTML string) error {
 		// Use a display name + the sender email address
 		fromHeader := fmt.Sprintf("System Design Daily <%s>", m.Sender)
 
+		unsubscribeHTML := fmt.Sprintf(
+			`<br><br><hr><p style="font-size: 12px; color: #666; text-align: center;">
+			<a href="%s/unsubscribe?email=%s">Unsubscribe</a> from these emails.</p>`,
+			m.PublicURL, recipient,
+		)
+
+		fullBody := bodyHTML + unsubscribeHTML
+
 		msg := []byte(fmt.Sprintf("To: %s\r\n"+
 			"From: %s\r\n"+
 			"Subject: %s\r\n"+
 			"%s"+
-			"%s", recipient, fromHeader, subject, mime, bodyHTML))
+			"%s", recipient, fromHeader, subject, mime, fullBody))
 
 		var err error
 		if m.Port == 465 {

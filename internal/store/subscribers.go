@@ -61,6 +61,20 @@ func (s *FileStore) Add(email string) error {
 	return s.save()
 }
 
+func (s *FileStore) Remove(email string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for i, e := range s.emails {
+		if e == email {
+			// Remove element at index i
+			s.emails = append(s.emails[:i], s.emails[i+1:]...)
+			return s.save()
+		}
+	}
+	return nil // Not found, treat as success
+}
+
 func (s *FileStore) GetAll() ([]string, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

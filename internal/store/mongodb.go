@@ -71,6 +71,15 @@ func (s *MongoStore) Add(email string) error {
 	return err
 }
 
+func (s *MongoStore) Remove(email string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"email": email}
+	_, err := s.collection.DeleteOne(ctx, filter)
+	return err
+}
+
 func (s *MongoStore) GetAll() ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

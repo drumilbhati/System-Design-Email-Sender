@@ -15,6 +15,7 @@ type Config struct {
 	SenderEmail  string
 	Port         string
 	CronSecret   string
+	PublicURL    string
 }
 
 func Load() *Config {
@@ -27,6 +28,7 @@ func Load() *Config {
 		SenderEmail:  getEnvOrFatal("SENDER_EMAIL"),
 		Port:         getEnvOrDefault("PORT", "8080"),
 		CronSecret:   getEnvOrDefault("CRON_SECRET", os.Getenv("SMTP_PASS")), // Fallback to SMTP_PASS
+		PublicURL:    getEnvOrDefault("PUBLIC_URL", "https://system-design-email-sender.onrender.com"),
 	}
 }
 

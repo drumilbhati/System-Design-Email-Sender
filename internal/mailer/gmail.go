@@ -12,11 +12,12 @@ import (
 )
 
 type GmailMailer struct {
-	Service *gmail.Service
-	Sender  string
+	Service   *gmail.Service
+	Sender    string
+	PublicURL string
 }
 
-func NewGmailMailer(ctx context.Context, senderEmail string, credentialsJSON []byte) (*GmailMailer, error) {
+func NewGmailMailer(ctx context.Context, senderEmail, publicURL string, credentialsJSON []byte) (*GmailMailer, error) {
 	// 1. Parse the credentials (looks for "web" or "installed" app in JSON)
 	config, err := google.ConfigFromJSON(credentialsJSON, gmail.GmailSendScope)
 	if err != nil {
@@ -34,8 +35,9 @@ func NewGmailMailer(ctx context.Context, senderEmail string, credentialsJSON []b
 	}
 
 	return &GmailMailer{
-		Service: srv,
-		Sender:  senderEmail,
+		Service:   srv,
+		Sender:    senderEmail,
+		PublicURL: publicURL,
 	},
 	nil
 }
@@ -48,6 +50,14 @@ func (m *GmailMailer) Send(to []string, subject, bodyHTML string) error {
 	for _, recipient := range to {
 		var message gmail.Message
 
+		unsubscribeHTML := fmt.Sprintf(
+			`<br><br><hr><p style="font-size: 12px; color: #666; text-align: center;">
+			<a href="%s/unsubscribe?email=%s">Unsubscribe</a> from these emails.</p>`,
+			m.PublicURL, recipient,
+		)
+
+		fullBody := bodyHTML + unsubscribeHTML
+
 		// Construct the email message (MIME)
 		emailContent := fmt.Sprintf("From: %s\r\n" +
 			"To: %s\r\n" +
@@ -55,7 +65,7 @@ func (m *GmailMailer) Send(to []string, subject, bodyHTML string) error {
 			"MIME-Version: 1.0\r\n" +
 			"Content-Type: text/html; charset=\"UTF-8\"\r\n" +
 			"\r\n" +
-			"%s", m.Sender, recipient, subject, bodyHTML)
+			"%s", m.Sender, recipient, subject, fullBody)
 
 		// Gmail API requires base64url encoding
 		message.Raw = base64.URLEncoding.EncodeToString([]byte(emailContent))
