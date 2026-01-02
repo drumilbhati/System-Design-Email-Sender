@@ -30,17 +30,25 @@ func main() {
 	cfg := config.Load()
 
 	// 2. Initialize Store
-	dataDir := os.Getenv("DATA_DIR")
-	if dataDir == "" {
-		dataDir = "."
+	var subStore store.Store
+	var err error
+
+	if mongoURI := os.Getenv("MONGO_URI"); mongoURI != "" {
+		log.Println("Initializing MongoDB store...")
+		subStore, err = store.NewMongoStore(mongoURI)
+	} else {
+		log.Println("Initializing File store (local)...")
+		dataDir := os.Getenv("DATA_DIR")
+		if dataDir == "" {
+			dataDir = "."
+		}
+		if err := os.MkdirAll(dataDir, 0755); err != nil {
+			log.Printf("Warning: could not create data directory: %v", err)
+		}
+		storePath := fmt.Sprintf("%s/subscribers.json", dataDir)
+		subStore, err = store.NewFileStore(storePath)
 	}
-	// Ensure directory exists
-	if err := os.MkdirAll(dataDir, 0755); err != nil {
-		log.Printf("Warning: could not create data directory: %v", err)
-	}
-	
-	storePath := fmt.Sprintf("%s/subscribers.json", dataDir)
-	subStore, err := store.NewSubscriberStore(storePath)
+
 	if err != nil {
 		log.Fatalf("Failed to initialize store: %v", err)
 	}
@@ -65,7 +73,12 @@ func main() {
 	dailyJob := func() {
 		log.Println("Starting daily newsletter generation...")
 		
-		subscribers := subStore.GetAll()
+		subscribers, err := subStore.GetAll()
+		if err != nil {
+			log.Printf("Error fetching subscribers: %v", err)
+			return
+		}
+
 		if len(subscribers) == 0 {
 			log.Println("No subscribers to send to. Skipping.")
 			return

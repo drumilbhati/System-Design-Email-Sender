@@ -6,14 +6,14 @@ import (
 	"sync"
 )
 
-type SubscriberStore struct {
+type FileStore struct {
 	mu       sync.RWMutex
 	filePath string
 	emails   []string
 }
 
-func NewSubscriberStore(filePath string) (*SubscriberStore, error) {
-	s := &SubscriberStore{
+func NewFileStore(filePath string) (*FileStore, error) {
+	s := &FileStore{
 		filePath: filePath,
 		emails:   []string{},
 	}
@@ -26,7 +26,7 @@ func NewSubscriberStore(filePath string) (*SubscriberStore, error) {
 	return s, nil
 }
 
-func (s *SubscriberStore) load() error {
+func (s *FileStore) load() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -38,7 +38,7 @@ func (s *SubscriberStore) load() error {
 	return json.Unmarshal(data, &s.emails)
 }
 
-func (s *SubscriberStore) save() error {
+func (s *FileStore) save() error {
 	data, err := json.MarshalIndent(s.emails, "", "  ")
 	if err != nil {
 		return err
@@ -46,7 +46,7 @@ func (s *SubscriberStore) save() error {
 	return os.WriteFile(s.filePath, data, 0644)
 }
 
-func (s *SubscriberStore) Add(email string) error {
+func (s *FileStore) Add(email string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -61,12 +61,12 @@ func (s *SubscriberStore) Add(email string) error {
 	return s.save()
 }
 
-func (s *SubscriberStore) GetAll() []string {
+func (s *FileStore) GetAll() ([]string, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	
 	// Return a copy
 	result := make([]string, len(s.emails))
 	copy(result, s.emails)
-	return result
+	return result, nil
 }
