@@ -60,14 +60,39 @@ func main() {
 	}
 	defer aiClient.Close()
 
-	// 4. Initialize Mailer
-	emailSender := mailer.NewSMTPMailer(
-		cfg.SMTPHost,
-		cfg.SMTPPort,
-		cfg.SMTPUser,
-		cfg.SMTPPass,
-		cfg.SenderEmail,
-	)
+	// 4. Initialize Mailer (Gmail API)
+	// We read credentials from ENV or file
+	credsJSON := os.Getenv("GMAIL_CREDENTIALS_JSON")
+	if credsJSON == "" {
+		// Fallback to local file for dev
+		b, err := os.ReadFile("credentials.json")
+		if err == nil {
+			credsJSON = string(b)
+		}
+	}
+
+	var emailSender interface {
+		Send(to []string, subject, bodyHTML string) error
+	}
+
+	if credsJSON != "" {
+		log.Println("Initializing Gmail API Mailer...")
+		gm, err := mailer.NewGmailMailer(context.Background(), cfg.SenderEmail, []byte(credsJSON))
+		if err != nil {
+			log.Fatalf("Failed to create Gmail client: %v", err)
+		}
+		emailSender = gm
+	} else {
+		// Fallback to SMTP (will likely fail on Render, but keeps local dev simple if needed)
+		log.Println("No Gmail credentials found. Falling back to SMTP (Legacy)...")
+		emailSender = mailer.NewSMTPMailer(
+			cfg.SMTPHost,
+			cfg.SMTPPort,
+			cfg.SMTPUser,
+			cfg.SMTPPass,
+			cfg.SenderEmail,
+		)
+	}
 
 	// 5. Define the Daily Job
 	dailyJob := func() {

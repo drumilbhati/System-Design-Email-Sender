@@ -1,0 +1,15 @@
+# Secrets
+.env
+credentials.json
+token.json
+
+# Build artifacts
+/server
+*.exe
+*.dll
+*.so
+*.dylib
+
+# OS files
+.DS_Store
+Thumbs.db
